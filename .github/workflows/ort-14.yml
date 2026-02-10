@@ -6,6 +6,10 @@ on:
         description: 'Repository URL to scan'
         required: true
         default: 'https://github.com/babu-lal-computers/WebGoat'
+      github_token:
+        description: 'GitHub Personal Access Token for private repository access'
+        required: false
+        default: ''
 jobs:
   ort-scan:
     runs-on: ubuntu-latest
@@ -36,6 +40,8 @@ jobs:
         echo "ORT configuration files setup complete"  
     - name: Run ORT
       uses: oss-review-toolkit/ort-ci-github-action@v1
+      env:
+        GITHUB_TOKEN: ${{ github.event.inputs.github_token || secrets.GITHUB_TOKEN }}
       with:
         vcs-url: '${{ github.event.inputs.vcs_url }}'
         allow-dynamic-versions: 'true'
@@ -48,5 +54,5 @@ jobs:
             evaluator,
             reporter,
             upload-results
-        ort-cli-args: '-P ort.scanner.skipExcluded=true ort.analyzer.allowDynamicVersions=true'
+        ort-cli-args: '-P ort.scanner.skipExcluded=true'
         ort-cli-scan-args: '--package-types=PROJECT'    
